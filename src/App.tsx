@@ -12,8 +12,18 @@ function App() {
       <div className="container">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/sign-in" element={<AuthForm confirmPw={false} />} />
-          <Route path="/sign-up" element={<AuthForm confirmPw={true} />} />
+          <Route
+            path="/sign-in"
+            element={<AuthForm confirmPw={false} task={"Sign in"} />}
+          />
+          <Route
+            path="/forgot-password"
+            element={<AuthForm confirmPw={true} task={"Reset password"} />}
+          />
+          <Route
+            path="/sign-up"
+            element={<AuthForm confirmPw={true} task={"Sign up"} />}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

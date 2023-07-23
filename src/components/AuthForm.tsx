@@ -1,16 +1,31 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
-const AuthForm = ({ confirmPw }: { confirmPw: boolean }) => {
+const AuthForm = ({
+  task,
+  confirmPw,
+}: {
+  task: string;
+  confirmPw: boolean;
+}) => {
+  const [searchParams] = useSearchParams();
+  console.log(searchParams.get("token"));
+  console.log(searchParams.get("email"));
   return (
     <>
+      <h2>{task}</h2>
       <form className="generic-component">
         <fieldset>
           <div className="generic-column">
-            <label htmlFor="username">User name</label>
-            <input type="text" name="username" />
+            {task !== "Reset password" && (
+              <>
+                <label htmlFor="username">User name</label>
+                <input type="text" name="username" />
+              </>
+            )}
+
             <label htmlFor="password">Password</label>
             <input type="text" name="password" />
-            {confirmPw && (
+            {task !== "Sign in" && (
               <>
                 <label htmlFor="confirm-password">Confirm Password</label>
                 <input type="text" name="confirm-password" />
