@@ -38,6 +38,7 @@ input:focus {
 }
 
 .generic-component {
+  padding:10px;
   background-color: var(--main-component-color);
   border: 1px solid grey;
   border-radius: 5px;
@@ -51,9 +52,13 @@ input:focus {
 }
 
 .generic-column input, .generic-column  label {
- 
   padding-bottom: 10px;
   padding-top: 10px;
+}
+
+.generic-column  button {
+  margin-top: 10px;
+
 }
 
 .header { 
@@ -82,5 +87,23 @@ input:focus {
 
 fieldset{
   border:0;
-  padding:0px 10px 15px 10px;
+  margin: 0px;
+  padding: 0px;
+}
+
+#log-out {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.warning {
+  color:red;
+}
+
+input[type="text"]:disabled {
+  background: #d8e5ff;
 }
