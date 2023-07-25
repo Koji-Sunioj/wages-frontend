@@ -42,7 +42,7 @@ export const verifyToken = createAsyncThunk(
   async (token: string) => {
     const request = await fetch(
       `${wagesEndPoint}/check-session?token=${token}`,
-      { method: "GET" }
+      { method: "GET", headers: { "Content-Type": "application/json" } }
     );
     return await request.json();
   }
@@ -61,6 +61,23 @@ export const resetPw = createAsyncThunk(
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      }
+    );
+    const response = await request.json();
+    if (!request.ok) {
+      throw new Error(response.message);
+    }
+    return response;
+  }
+);
+
+export const forgotPw = createAsyncThunk(
+  "forgot-password",
+  async (email: string) => {
+    const request = await fetch(
+      `${wagesEndPoint}/users/${email}/forgot-password`,
+      {
+        method: "POST",
       }
     );
     const response = await request.json();
@@ -97,6 +114,20 @@ export const userSlice = createSlice({
   },
   extraReducers(builder) {
     builder
+      .addCase(forgotPw.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(forgotPw.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.message = action.payload.message;
+        state.mutateType = "emailed";
+      })
+      .addCase(forgotPw.rejected, (state, action) => {
+        state.error = true;
+        state.loading = false;
+        state.message = action.error.message!;
+      })
       .addCase(resetPw.pending, (state) => {
         state.loading = true;
       })

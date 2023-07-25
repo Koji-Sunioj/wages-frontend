@@ -16,7 +16,7 @@ const NavBar = ({ authData }: { authData: TAuth | null }) => {
   const logOut = () => {
     localStorage.removeItem("token");
     dispatch(resetUser());
-    navigate("/");
+    navigate("/", { state: { message: "successfully logged out" } });
   };
 
   return (

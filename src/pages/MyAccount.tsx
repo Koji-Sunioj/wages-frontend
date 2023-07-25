@@ -1,14 +1,11 @@
-import { useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
-import { TAppState } from "../utils/types";
 import moment from "moment";
+import { Link, useLocation } from "react-router-dom";
 
 import { TAuth } from "../utils/types";
 
 const MyAccount = ({ authData }: { authData: TAuth }) => {
   const { sub, created } = authData;
   const location = useLocation();
-  console.log(location.state);
 
   return (
     <>

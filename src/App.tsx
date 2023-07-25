@@ -18,11 +18,13 @@ function App() {
     auth: { data, loading, error },
   } = useSelector((state: TAppState) => state!);
 
+  const shouldFetch = data === null && token !== null && !error && !loading;
+
   useEffect(() => {
-    if (data === null && token !== null && !error && !loading) {
+    if (shouldFetch) {
       dispatch(verifyToken(token));
     }
-  });
+  }, [shouldFetch, token, dispatch]);
 
   return (
     <BrowserRouter>
