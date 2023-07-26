@@ -27,19 +27,17 @@ const AuthForm = ({ task }: { task: string }) => {
     ) => {
       dispatch(resetMutate());
       navigate(uri, { state: state });
+      (document.getElementById("auth-form")! as HTMLFormElement).reset();
     };
 
     switch (mutateType) {
       case "signed":
-        if (data !== null) {
-          const { token } = data;
-          afterAuth("/", { message: message! });
-          localStorage.setItem("token", token);
-        }
+        const { token } = data!;
+        afterAuth("/", { message: message! });
+        localStorage.setItem("token", token);
         break;
       case "created":
         afterAuth("/sign-in");
-        (document.getElementById("auth-form")! as HTMLFormElement).reset();
         break;
       case "patched":
         data === null
@@ -51,8 +49,8 @@ const AuthForm = ({ task }: { task: string }) => {
 
   const defaultEmail = searchParams.get("email") || data?.sub || "";
   const hasParams = searchParams.has("email") && searchParams.has("token");
-  const needsReset = ["Reset password"].includes(task) || hasParams;
   const renderPw = task !== "Forgot password" || hasParams;
+  const needsReset = task === "Reset password" || hasParams;
   const renderConfPw =
     ["Reset password", "Sign up"].includes(task) || hasParams;
 
@@ -60,13 +58,19 @@ const AuthForm = ({ task }: { task: string }) => {
     event.preventDefault();
     const {
       currentTarget: {
-        password: { value: password },
         email: { value: email },
-        confirmPassword: { value: confirmPassword },
+        password: { value: password } = { value: null },
+        confirmPassword: { value: confirmPassword } = { value: null },
       },
     } = event;
-    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    const meetsReqs = pattern.test(password) && password === confirmPassword;
+
+    const emailPattern =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    const meetsReqs =
+      pwPattern.test(password) &&
+      password === confirmPassword &&
+      emailPattern.test(email);
 
     switch (task) {
       case "Sign in":
@@ -78,26 +82,25 @@ const AuthForm = ({ task }: { task: string }) => {
           : dispatch(setMessage("passwords don't match or meet requirements"));
         break;
       case "Reset password":
-        if (data !== null) {
-          const { token } = data;
-          meetsReqs
-            ? dispatch(
-                resetPw({ email: email, password: password, token: token })
-              )
-            : dispatch(
-                setMessage("passwords don't match or meet requirements")
-              );
-        }
+        const { token } = data!;
+        meetsReqs
+          ? dispatch(
+              resetPw({ email: email, password: password, token: token })
+            )
+          : dispatch(setMessage("passwords don't match or meet requirements"));
+
         break;
       case "Forgot password":
-        if (hasParams) {
-          const token = searchParams.get("token");
-          dispatch(
-            resetPw({ email: email, password: password, token: token! })
-          );
-        } else {
-          dispatch(forgotPw(email));
-        }
+        hasParams
+          ? dispatch(
+              resetPw({
+                email: email,
+                password: password,
+                token: searchParams.get("token")!,
+              })
+            )
+          : dispatch(forgotPw(email));
+
         break;
     }
   };
@@ -115,18 +118,18 @@ const AuthForm = ({ task }: { task: string }) => {
               defaultValue={defaultEmail}
               disabled={needsReset}
             />
-            <div style={{ display: renderPw ? "grid" : "none" }}>
-              <label htmlFor="password">Password</label>
-              <input type="password" name="password" />
-            </div>
-            <div
-              style={{
-                display: renderConfPw ? "grid" : "none",
-              }}
-            >
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input type="password" name="confirmPassword" />
-            </div>
+            {renderPw && (
+              <>
+                <label htmlFor="password">Password</label>
+                <input type="password" name="password" />
+              </>
+            )}
+            {renderConfPw && (
+              <>
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <input type="password" name="confirmPassword" />
+              </>
+            )}
             <div>
               <button>Submit</button>
             </div>

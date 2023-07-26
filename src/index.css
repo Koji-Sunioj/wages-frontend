@@ -35,6 +35,8 @@ input:focus {
 
 .container {
   padding: 20px;
+  margin: 0 auto;
+  width: 50%;
 }
 
 .generic-component {
@@ -42,7 +44,6 @@ input:focus {
   background-color: var(--main-component-color);
   border: 1px solid grey;
   border-radius: 5px;
-  width: 50%;
 }
 
 .generic-column {
@@ -76,6 +77,7 @@ input:focus {
 .header nav ul {
   list-style: none;
   display: flex;
+  justify-content: center;
   color: var(--main-font-color);
   margin: 5px;
   padding: 0px;
