@@ -29,7 +29,7 @@ const AuthForm = ({ task }: { task: string }) => {
       navigate(uri, { state: state });
       (document.getElementById("auth-form")! as HTMLFormElement).reset();
     };
-
+    console.log(mutateType);
     switch (mutateType) {
       case "signed":
         const { token } = data!;

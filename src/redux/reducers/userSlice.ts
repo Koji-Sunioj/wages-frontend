@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { getApi } from "../../utils/getApi";
 import { TUserState } from "../../utils/types";
+import { handleException } from "../../utils/httpException";
 
 const wagesEndPoint = getApi("WagesBackEnd");
 
@@ -13,10 +14,7 @@ export const signIn = createAsyncThunk(
       body: JSON.stringify(userParams),
       headers: { "Content-Type": "application/json" },
     });
-    const response = await request.json();
-    if (!request.ok) {
-      throw new Error(response.message);
-    }
+    const response = await handleException(request);
     return response;
   }
 );
@@ -29,10 +27,7 @@ export const signUp = createAsyncThunk(
       body: JSON.stringify(userParams),
       headers: { "Content-Type": "application/json" },
     });
-    const response = await request.json();
-    if (!request.ok) {
-      throw new Error(response.message);
-    }
+    const response = await handleException(request);
     return response;
   }
 );
@@ -42,9 +37,10 @@ export const verifyToken = createAsyncThunk(
   async (token: string) => {
     const request = await fetch(
       `${wagesEndPoint}/check-session?token=${token}`,
-      { method: "GET", headers: { "Content-Type": "application/json" } }
+      { method: "GET" }
     );
-    return await request.json();
+    const response = await handleException(request);
+    return response;
   }
 );
 
@@ -63,10 +59,7 @@ export const resetPw = createAsyncThunk(
         },
       }
     );
-    const response = await request.json();
-    if (!request.ok) {
-      throw new Error(response.message);
-    }
+    const response = await handleException(request);
     return response;
   }
 );
@@ -80,10 +73,7 @@ export const forgotPw = createAsyncThunk(
         method: "POST",
       }
     );
-    const response = await request.json();
-    if (!request.ok) {
-      throw new Error(response.message);
-    }
+    const response = await handleException(request);
     return response;
   }
 );
@@ -106,7 +96,7 @@ export const userSlice = createSlice({
       state.error = true;
     },
     resetMutate: (state) => {
-      if (state.mutateType === "signed" || state.mutateType === "patched") {
+      if (state.mutateType === "signed") {
         state.message = null;
       }
       state.mutateType = "idle";
@@ -120,7 +110,7 @@ export const userSlice = createSlice({
       .addCase(forgotPw.fulfilled, (state, action) => {
         state.error = false;
         state.loading = false;
-        state.message = action.payload.message;
+        state.message = action.payload.detail;
         state.mutateType = "emailed";
       })
       .addCase(forgotPw.rejected, (state, action) => {
@@ -134,10 +124,11 @@ export const userSlice = createSlice({
       .addCase(resetPw.fulfilled, (state, action) => {
         state.error = false;
         state.loading = false;
-        state.message = action.payload.message;
+        state.message = action.payload.detail;
         state.mutateType = "patched";
       })
       .addCase(resetPw.rejected, (state, action) => {
+        console.log(action);
         state.error = true;
         state.loading = false;
         state.message = action.error.message!;
@@ -177,7 +168,7 @@ export const userSlice = createSlice({
       .addCase(signUp.fulfilled, (state, action) => {
         state.error = false;
         state.loading = false;
-        state.message = action.payload.message;
+        state.message = action.payload.detail;
         state.mutateType = "created";
       })
       .addCase(signUp.rejected, (state, action) => {
