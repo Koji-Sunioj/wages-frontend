@@ -40,6 +40,7 @@ export const verifyToken = createAsyncThunk(
       { method: "GET" }
     );
     const response = await handleException(request);
+    console.log(response);
     return response;
   }
 );
@@ -161,6 +162,7 @@ export const userSlice = createSlice({
         state.error = true;
         state.loading = false;
         state.message = action.error.message!;
+        state.mutateType = "invalid token";
       })
       .addCase(signUp.pending, (state) => {
         state.loading = true;

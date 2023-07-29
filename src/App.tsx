@@ -9,22 +9,28 @@ import MyAccount from "./pages/MyAccount";
 import AuthForm from "./components/AuthForm";
 
 import { TAppState, TAppDispatch } from "./utils/types";
-import { verifyToken } from "./redux/reducers/userSlice";
+import { resetMutate, verifyToken } from "./redux/reducers/userSlice";
 
 function App() {
   const token = localStorage.getItem("token");
   const dispatch = useDispatch<TAppDispatch>();
   const {
-    auth: { data, loading, error },
+    auth: { data, loading, error, mutateType },
   } = useSelector((state: TAppState) => state!);
 
   const shouldFetch = data === null && token !== null && !error && !loading;
 
   useEffect(() => {
-    if (shouldFetch) {
-      dispatch(verifyToken(token));
+    switch (mutateType) {
+      case "idle":
+        shouldFetch && dispatch(verifyToken(token));
+        break;
+      case "invalid token":
+        localStorage.removeItem("token");
+        dispatch(resetMutate());
+        break;
     }
-  }, [shouldFetch, token, dispatch]);
+  }, [shouldFetch, token, dispatch, mutateType]);
 
   return (
     <BrowserRouter>
